@@ -1,0 +1,7 @@
+{
+  "id": "job-dashboard",
+  "name": "Job Application Dashboard",
+  "version": "1.0.0",
+  "description": "Tracks job applications and provides an admin dashboard",
+  "entry": "dist/index.js"
+}

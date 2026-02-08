@@ -1,0 +1,25 @@
+# Environment & secrets
+.env
+infra/.deployed-resources.json
+infra/*.pem
+
+# User data
+data/resume.pdf
+
+# Plugin build & runtime
+plugin/node_modules/
+plugin/dist/
+plugin/data/
+
+# OpenClaw runtime
+openclaw/workspace/memory/
+
+# Chrome profile (if synced locally)
+chrome-profile/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

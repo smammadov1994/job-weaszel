@@ -1,0 +1,54 @@
+{
+  "agent": {
+    "model": "anthropic/claude-opus-4-6"
+  },
+  "gateway": {
+    "port": 18789,
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    }
+  },
+  "browser": {
+    "enabled": true,
+    "defaultProfile": "job-browser",
+    "headless": false,
+    "profiles": {
+      "job-browser": {
+        "cdpUrl": "http://127.0.0.1:9222"
+      }
+    }
+  },
+  "channels": {
+    "whatsapp": {
+      "enabled": true,
+      "dmPolicy": "allowlist",
+      "allowFrom": ["${WHATSAPP_ALLOW_FROM}"],
+      "ackReaction": {
+        "emoji": "👀",
+        "direct": true
+      },
+      "textChunkLimit": 4000,
+      "mediaMaxMb": 10
+    }
+  },
+  "agents": {
+    "defaults": {
+      "workspace": "/home/ubuntu/openclaw-workspace",
+      "bootstrapMaxChars": 20000,
+      "sandbox": {
+        "mode": "off"
+      }
+    }
+  },
+  "plugins": {
+    "enabled": true,
+    "load": {
+      "paths": ["/home/ubuntu/job-apply/plugin"]
+    }
+  },
+  "hooks": {
+    "enabled": true
+  }
+}

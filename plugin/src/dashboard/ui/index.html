@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Application Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f1117;
+      color: #e1e4e8;
+      min-height: 100vh;
+    }
+    .header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #f0f6fc;
+    }
+    .header .refresh-btn {
+      background: #238636;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .header .refresh-btn:hover { background: #2ea043; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+    /* Summary Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .card .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #8b949e;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+    .card .value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #f0f6fc;
+    }
+    .card .sub { font-size: 13px; color: #8b949e; margin-top: 4px; }
+    .card.success .value { color: #3fb950; }
+    .card.warning .value { color: #d29922; }
+    .card.danger .value { color: #f85149; }
+    .card.info .value { color: #58a6ff; }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid #30363d;
+      margin-bottom: 16px;
+    }
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      color: #8b949e;
+      border-bottom: 2px solid transparent;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    .tab:hover { color: #e1e4e8; }
+    .tab.active { color: #f0f6fc; border-bottom-color: #f78166; }
+
+    /* Table */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      background: #1c2128;
+      color: #8b949e;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    td {
+      padding: 12px 16px;
+      border-top: 1px solid #21262d;
+      font-size: 14px;
+    }
+    tr:hover td { background: #1c2128; }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-applied { background: #1b4332; color: #3fb950; }
+    .status-failed { background: #3d1f1f; color: #f85149; }
+    .status-skipped { background: #3d2e00; color: #d29922; }
+    .status-captcha_blocked { background: #2d1b4e; color: #bc8cff; }
+
+    .platform-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .platform-linkedin { background: #0a3069; color: #58a6ff; }
+    .platform-indeed { background: #1b3a4b; color: #56d4dd; }
+    .platform-glassdoor { background: #1b4332; color: #3fb950; }
+    .platform-ziprecruiter { background: #3d2e00; color: #d29922; }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .filters select, .filters input {
+      background: #161b22;
+      border: 1px solid #30363d;
+      color: #e1e4e8;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    /* Activity log */
+    .log-container {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .log-entry {
+      padding: 8px 16px;
+      border-bottom: 1px solid #21262d;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      font-size: 13px;
+      display: flex;
+      gap: 12px;
+    }
+    .log-entry:last-child { border-bottom: none; }
+    .log-time { color: #484f58; white-space: nowrap; }
+    .log-level { font-weight: 600; min-width: 50px; }
+    .log-level.info { color: #58a6ff; }
+    .log-level.warn { color: #d29922; }
+    .log-level.error { color: #f85149; }
+    .log-msg { color: #c9d1d9; }
+
+    /* Chart */
+    .chart-container {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .chart-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #f0f6fc;
+    }
+    .chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 200px;
+      padding-bottom: 24px;
+      position: relative;
+    }
+    .chart-bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .chart-bar {
+      width: 100%;
+      max-width: 30px;
+      background: #238636;
+      border-radius: 3px 3px 0 0;
+      min-height: 2px;
+      transition: height 0.3s;
+    }
+    .chart-label {
+      font-size: 10px;
+      color: #484f58;
+      margin-top: 6px;
+      transform: rotate(-45deg);
+      white-space: nowrap;
+    }
+
+    /* Screenshot modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow: auto;
+    }
+    .modal img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    .modal .close-btn {
+      float: right;
+      background: none;
+      border: none;
+      color: #8b949e;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .pagination button {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .pagination button:hover { background: #30363d; }
+    .pagination button:disabled { opacity: 0.4; cursor: default; }
+    .pagination .page-info { line-height: 32px; color: #8b949e; font-size: 13px; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #484f58;
+    }
+    .empty-state p { font-size: 16px; margin-top: 8px; }
+
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Job Application Dashboard</h1>
+    <button class="refresh-btn" onclick="loadAll()">Refresh</button>
+  </div>
+
+  <div class="container">
+    <!-- Summary Cards -->
+    <div class="cards">
+      <div class="card success">
+        <div class="label">Applied Today</div>
+        <div class="value" id="today-applied">0</div>
+        <div class="sub" id="today-sub">0 attempted</div>
+      </div>
+      <div class="card info">
+        <div class="label">This Week</div>
+        <div class="value" id="week-applied">0</div>
+        <div class="sub" id="week-sub">applied this week</div>
+      </div>
+      <div class="card warning">
+        <div class="label">Total Applied</div>
+        <div class="value" id="total-applied">0</div>
+        <div class="sub" id="total-sub">all time</div>
+      </div>
+      <div class="card danger">
+        <div class="label">Failed / Skipped</div>
+        <div class="value" id="total-failed">0</div>
+        <div class="sub" id="failed-sub">total failures</div>
+      </div>
+    </div>
+
+    <!-- Daily Chart -->
+    <div class="chart-container">
+      <div class="chart-title">Applications per Day (Last 30 Days)</div>
+      <div class="chart" id="daily-chart"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('applications')">Applications</div>
+      <div class="tab" onclick="switchTab('logs')">Activity Log</div>
+    </div>
+
+    <!-- Applications Tab -->
+    <div class="tab-content active" id="tab-applications">
+      <div class="filters">
+        <select id="filter-platform" onchange="loadApplications()">
+          <option value="">All Platforms</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="indeed">Indeed</option>
+          <option value="glassdoor">Glassdoor</option>
+          <option value="ziprecruiter">ZipRecruiter</option>
+        </select>
+        <select id="filter-status" onchange="loadApplications()">
+          <option value="">All Statuses</option>
+          <option value="applied">Applied</option>
+          <option value="failed">Failed</option>
+          <option value="skipped">Skipped</option>
+          <option value="captcha_blocked">CAPTCHA Blocked</option>
+        </select>
+      </div>
+
+      <table id="app-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Platform</th>
+            <th>Company</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="app-tbody"></tbody>
+      </table>
+
+      <div class="pagination">
+        <button id="prev-btn" onclick="prevPage()" disabled>Previous</button>
+        <span class="page-info" id="page-info">Page 1</span>
+        <button id="next-btn" onclick="nextPage()">Next</button>
+      </div>
+    </div>
+
+    <!-- Logs Tab -->
+    <div class="tab-content" id="tab-logs">
+      <div class="log-container" id="log-container"></div>
+    </div>
+  </div>
+
+  <!-- Screenshot Modal -->
+  <div class="modal-overlay" id="modal" onclick="closeModal(event)">
+    <div class="modal">
+      <button class="close-btn" onclick="document.getElementById('modal').classList.remove('active')">&times;</button>
+      <h3 id="modal-title" style="margin-bottom:12px"></h3>
+      <img id="modal-img" src="" alt="Screenshot">
+      <div id="modal-details" style="margin-top:16px;font-size:14px;color:#8b949e"></div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = '/plugins/job-dashboard/api';
+    let currentPage = 0;
+    const PAGE_SIZE = 50;
+
+    async function api(path) {
+      const res = await fetch(BASE + path);
+      return res.json();
+    }
+
+    async function loadStats() {
+      const stats = await api('/stats');
+
+      document.getElementById('today-applied').textContent =
+        stats.today ? stats.today.total_applied : 0;
+      document.getElementById('today-sub').textContent =
+        (stats.today ? stats.today.total_attempted : 0) + ' attempted';
+
+      document.getElementById('week-applied').textContent = stats.thisWeek.applied;
+      document.getElementById('week-sub').textContent = 'applied this week';
+
+      document.getElementById('total-applied').textContent = stats.total.applied;
+      document.getElementById('total-sub').textContent =
+        `${stats.total.applied + stats.total.failed + stats.total.skipped} total attempts`;
+
+      document.getElementById('total-failed').textContent =
+        stats.total.failed + stats.total.skipped;
+      document.getElementById('failed-sub').textContent =
+        `${stats.total.failed} failed, ${stats.total.skipped} skipped`;
+    }
+
+    async function loadChart() {
+      const data = await api('/stats/daily?days=30');
+      const chart = document.getElementById('daily-chart');
+      chart.innerHTML = '';
+
+      if (data.length === 0) {
+        chart.innerHTML = '<div class="empty-state"><p>No data yet</p></div>';
+        return;
+      }
+
+      // Sort by date ascending
+      data.sort((a, b) => a.date.localeCompare(b.date));
+
+      const maxVal = Math.max(...data.map(d => d.total_applied), 1);
+
+      data.forEach(day => {
+        const group = document.createElement('div');
+        group.className = 'chart-bar-group';
+
+        const bar = document.createElement('div');
+        bar.className = 'chart-bar';
+        const height = (day.total_applied / maxVal) * 176;
+        bar.style.height = height + 'px';
+        bar.title = `${day.date}: ${day.total_applied} applied`;
+
+        const label = document.createElement('div');
+        label.className = 'chart-label';
+        label.textContent = day.date.slice(5); // MM-DD
+
+        group.appendChild(bar);
+        group.appendChild(label);
+        chart.appendChild(group);
+      });
+    }
+
+    async function loadApplications() {
+      const platform = document.getElementById('filter-platform').value;
+      const status = document.getElementById('filter-status').value;
+      const offset = currentPage * PAGE_SIZE;
+
+      let url = `/applications?limit=${PAGE_SIZE}&offset=${offset}`;
+      if (platform) url += `&platform=${platform}`;
+      if (status) url += `&status=${status}`;
+
+      const { applications, total } = await api(url);
+      const tbody = document.getElementById('app-tbody');
+
+      if (applications.length === 0) {
+        tbody.innerHTML = `
+          <tr><td colspan="7" style="text-align:center;padding:40px;color:#484f58">
+            No applications found
+          </td></tr>`;
+        document.getElementById('page-info').textContent = 'Page 0 of 0';
+        document.getElementById('prev-btn').disabled = true;
+        document.getElementById('next-btn').disabled = true;
+        return;
+      }
+
+      const totalPages = Math.ceil(total / PAGE_SIZE);
+      document.getElementById('page-info').textContent =
+        `Page ${currentPage + 1} of ${totalPages}`;
+      document.getElementById('prev-btn').disabled = currentPage === 0;
+      document.getElementById('next-btn').disabled = currentPage >= totalPages - 1;
+
+      tbody.innerHTML = applications.map(app => `
+        <tr>
+          <td>${new Date(app.applied_at).toLocaleDateString()}</td>
+          <td><span class="platform-badge platform-${app.platform}">${app.platform}</span></td>
+          <td>${escHtml(app.company)}</td>
+          <td><a href="${escHtml(app.url)}" target="_blank" rel="noopener">${escHtml(app.title)}</a></td>
+          <td><span class="status-badge status-${app.status}">${app.status}</span></td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+              title="${escHtml(app.notes || '')}">${escHtml(app.notes || '—')}</td>
+          <td>${app.screenshot_path
+            ? `<a href="#" onclick="showScreenshot(${app.id},'${escHtml(app.company)} - ${escHtml(app.title)}');return false">View</a>`
+            : ''}</td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadLogs() {
+      const logs = await api('/logs?limit=200');
+      const container = document.getElementById('log-container');
+
+      if (logs.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No activity yet</p></div>';
+        return;
+      }
+
+      container.innerHTML = logs.map(log => `
+        <div class="log-entry">
+          <span class="log-time">${new Date(log.timestamp).toLocaleString()}</span>
+          <span class="log-level ${log.level}">${log.level.toUpperCase()}</span>
+          <span class="log-msg">${escHtml(log.message)}</span>
+        </div>
+      `).join('');
+    }
+
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+      event.target.classList.add('active');
+      document.getElementById('tab-' + name).classList.add('active');
+
+      if (name === 'logs') loadLogs();
+    }
+
+    function prevPage() {
+      if (currentPage > 0) { currentPage--; loadApplications(); }
+    }
+
+    function nextPage() {
+      currentPage++;
+      loadApplications();
+    }
+
+    function showScreenshot(id, title) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-img').src = BASE + '/screenshots/' + id;
+      document.getElementById('modal').classList.add('active');
+    }
+
+    function closeModal(e) {
+      if (e.target === e.currentTarget) {
+        e.currentTarget.classList.remove('active');
+      }
+    }
+
+    function escHtml(s) {
+      const div = document.createElement('div');
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    function loadAll() {
+      loadStats();
+      loadChart();
+      loadApplications();
+    }
+
+    // Auto-refresh every 60 seconds
+    setInterval(loadAll, 60000);
+
+    // Initial load
+    loadAll();
+  </script>
+</body>
+</html>

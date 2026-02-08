@@ -1,0 +1,49 @@
+{
+  "searchCriteria": {
+    "titles": [
+      "Software Engineer",
+      "Full Stack Engineer",
+      "Backend Engineer",
+      "Frontend Engineer",
+      "Software Developer"
+    ],
+    "locations": ["Remote"],
+    "experienceLevel": "mid",
+    "datePosted": "past_24_hours",
+    "remoteOnly": true,
+    "salaryMin": null,
+    "salaryMax": null
+  },
+  "platforms": {
+    "linkedin": {
+      "enabled": true,
+      "easyApplyOnly": false,
+      "prioritizeEasyApply": true,
+      "maxPerDay": 30
+    },
+    "indeed": {
+      "enabled": true,
+      "maxPerDay": 30
+    },
+    "glassdoor": {
+      "enabled": true,
+      "maxPerDay": 30
+    },
+    "ziprecruiter": {
+      "enabled": true,
+      "maxPerDay": 30
+    }
+  },
+  "filters": {
+    "skipIfExperienceExceedsBy": 2,
+    "requiredKeywords": [],
+    "excludeKeywords": ["clearance", "principal", "director", "VP"],
+    "excludeCompanies": [],
+    "minimumMatchScore": 0.7
+  },
+  "schedule": {
+    "searchTimes": ["09:00", "13:00", "17:00"],
+    "timezone": "America/New_York",
+    "daysOfWeek": [1, 2, 3, 4, 5]
+  }
+}
