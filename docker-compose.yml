@@ -1,0 +1,28 @@
+services:
+  job-weaszel:
+    build: .
+    container_name: job-weaszel
+    restart: unless-stopped
+    shm_size: 2g
+    env_file: .env
+    ports:
+      - "6080:6080"
+      - "18789:18789"
+    volumes:
+      - chrome-profile:/home/app/chrome-profile
+      - openclaw-data:/home/app/.openclaw
+      - plugin-data:/home/app/job-apply/plugin/data
+      - screenshots:/home/app/screenshots
+      - ./data:/home/app/job-apply/data
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:9222/json/version"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  chrome-profile:
+  openclaw-data:
+  plugin-data:
+  screenshots:

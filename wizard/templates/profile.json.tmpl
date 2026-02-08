@@ -1,0 +1,43 @@
+{
+  "searchCriteria": {
+    "titles": {{TITLES_JSON}},
+    "locations": {{LOCATIONS_JSON}},
+    "experienceLevel": "senior",
+    "datePosted": "past_24_hours",
+    "remoteOnly": {{REMOTE_ONLY}},
+    "salaryMin": {{SALARY_MIN}},
+    "salaryMax": null
+  },
+  "platforms": {
+    "linkedin": {
+      "enabled": {{LINKEDIN_ENABLED}},
+      "easyApplyOnly": false,
+      "prioritizeEasyApply": true,
+      "maxPerDay": {{MAX_APPS_PER_DAY}}
+    },
+    "indeed": {
+      "enabled": {{INDEED_ENABLED}},
+      "maxPerDay": {{MAX_APPS_PER_DAY}}
+    },
+    "glassdoor": {
+      "enabled": {{GLASSDOOR_ENABLED}},
+      "maxPerDay": {{MAX_APPS_PER_DAY}}
+    },
+    "ziprecruiter": {
+      "enabled": {{ZIPRECRUITER_ENABLED}},
+      "maxPerDay": {{MAX_APPS_PER_DAY}}
+    }
+  },
+  "filters": {
+    "skipIfExperienceExceedsBy": 2,
+    "requiredKeywords": [],
+    "excludeKeywords": {{EXCLUDE_KEYWORDS_JSON}},
+    "excludeCompanies": {{EXCLUDE_COMPANIES_JSON}},
+    "minimumMatchScore": 0.7
+  },
+  "schedule": {
+    "searchTimes": {{SCHEDULE_TIMES_JSON}},
+    "timezone": "America/New_York",
+    "daysOfWeek": [1, 2, 3, 4, 5]
+  }
+}

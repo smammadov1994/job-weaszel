@@ -2,6 +2,7 @@
 .env
 infra/.deployed-resources.json
 infra/*.pem
+infra/legacy/config.env
 
 # User data
 data/resume.pdf
@@ -16,6 +17,9 @@ openclaw/workspace/memory/
 
 # Chrome profile (if synced locally)
 chrome-profile/
+
+# Wizard
+wizard/node_modules/
 
 # OS
 .DS_Store

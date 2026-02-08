@@ -9,7 +9,7 @@ import fs from "fs";
 import path from "path";
 import type { IncomingMessage, ServerResponse } from "http";
 
-const UI_PATH = path.join(__dirname, "..", "..", "src", "dashboard", "ui", "index.html");
+const UI_PATH = path.join(__dirname, "ui", "index.html");
 
 export interface RouteHandler {
   method: string;

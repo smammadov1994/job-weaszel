@@ -1,0 +1,14 @@
+.git
+.env
+.env.example
+infra/
+node_modules
+wizard/node_modules
+plugin/node_modules
+plugin/dist
+plugin/data
+*.pem
+*.log
+chrome-profile/
+.DS_Store
+Thumbs.db

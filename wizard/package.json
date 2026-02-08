@@ -1,0 +1,14 @@
+{
+  "name": "job-weaszel-wizard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Interactive setup wizard for Job Weaszel",
+  "main": "index.mjs",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "dependencies": {
+    "prompts": "^2.4.2"
+  }
+}
